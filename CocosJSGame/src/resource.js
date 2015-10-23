@@ -36,6 +36,12 @@ var res = {
     block5_png: "res/blockorange.png",
     block6_png: "res/blockpurple.png",
     block7_png: "res/blockyellow.png",
+    fast1_png: "res/fast1.png",
+    slow1_png: "res/slow1.png",
+    normal1_png: "res/normal1.png",
+    fast2_png: "res/fast2.png",
+    slow2_png: "res/slow2.png",
+    normal2_png: "res/normal2.png"
 };
 
 var g_resources = [];

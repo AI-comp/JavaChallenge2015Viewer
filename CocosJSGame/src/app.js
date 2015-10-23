@@ -11,8 +11,11 @@ var allBoard=[];
 var Life=[];
 var PlayerPos=[];
 var PlayerCommand=[];
+var GoToFirstTurn=false;
+var GoToLastTurn=false;
+var replaySpeed=0.5;
 //"curr" means current
-// input text file
+// input log from text file
 var Arr = []; // for adding strings written in text(log)
 cc.loader.loadTxt(res.sampleLog,
 	function(obj,STR){	
@@ -57,13 +60,16 @@ var BaseLayer = cc.Layer.extend({
     ctor:function () {
         this._super(); // initialize 
         var size = cc.winSize; // window size
-       
-        this.sprite = new cc.Sprite(res.BackGround01_jpg);
+        if(currTurn<MaxTurn*0.8){
+        	this.sprite = new cc.Sprite(res.BackGround01_jpg);
+        }else{
+        	this.sprite = new cc.Sprite(res.BackGround02_jpg);	// evening
+        }
         this.sprite.attr({
             x: size.width / 2,
             y: size.height / 2,
             scale: 0.5,
-            rotation: 180
+            rotation: 0
         });
         this.sprite.setScale(1);
         this.addChild(this.sprite, 0);
@@ -78,7 +84,7 @@ var FieldLayer = cc.Layer.extend({
 		this._super(); // initialize 
 		var size = cc.winSize; // window size
 		var board=[[],[]];
-		board=allBoard[currTurn];
+		board=allBoard[currTurn]; // set board to current Turn
 		var i,j;
 		// field の座標
 		var fieldX=new Array();
@@ -104,14 +110,14 @@ var FieldLayer = cc.Layer.extend({
 				// board[y][x]
 				this.addChild(this.sprite, 0);
 				if(NUM>0){
-					var Fout=cc.FadeTo.create(1.5,150);
+					var Fout=cc.FadeTo.create(1.5,50+NUM*30);
 					var Fin=cc.FadeIn.create(1.5);
 					var TMP=cc.sequence(Array(Fout,Fin));
 					this.sprite.runAction(cc.repeatForever(TMP));				
 				}
 				/*
 				if(NUM>0){
-					// this shows the number of players' life on the pannel.				
+					// this shows the number of pannel's life on the pannel.				
 					var TurnLabel = new cc.LabelTTF(NUM, "Arial", 30);
 					TurnLabel.x = fieldX[2+5*i];
 					TurnLabel.y = fieldY[2+5*j];
@@ -125,48 +131,65 @@ var FieldLayer = cc.Layer.extend({
 		for(i=0;i<playersNum;++i){
 			var dir=PlayerPos[currTurn][i][2];
 			dir=dir[0]; // because of dir[1]=='\n'
-			if(i==0){				
-				if(dir=="L"){
+			if(i==0){		
+				switch (dir) {
+				case "L":
 					this.sprite = new cc.Sprite(res.chara1L_png);
-				}
-				else if(dir=="R"){
+					break;
+				case "R":
 					this.sprite = new cc.Sprite(res.chara1R_png);
-				}else if(dir=="U"){
+					break;
+				case "U":
 					this.sprite = new cc.Sprite(res.chara1B_png);
-				}else { // D, or N
+					break;
+				default: // D, or N
 					this.sprite = new cc.Sprite(res.chara1F_png);
+					break;
 				}
 			}else if(i==1){
-				if(dir=="L"){
+				switch (dir) {
+				case "L":
 					this.sprite = new cc.Sprite(res.chara2L_png);
-				}
-				else if(dir=="R"){
+					break;
+				case "R":
 					this.sprite = new cc.Sprite(res.chara2R_png);
-				}else if(dir=="U"){
+					break;
+				case "U":
 					this.sprite = new cc.Sprite(res.chara2B_png);
-				}else { // D, or N
+					break;
+				default: // D, or N
 					this.sprite = new cc.Sprite(res.chara2F_png);
+				break;
 				}
 			}else if(i==2){
-				if(dir=="L"){
+				switch (dir) {
+				case "L":
 					this.sprite = new cc.Sprite(res.chara3L_png);
-				}else if(dir=="R"){
+					break;
+				case "R":
 					this.sprite = new cc.Sprite(res.chara3R_png);
-				}else if(dir=="U"){
+					break;
+				case "U":
 					this.sprite = new cc.Sprite(res.chara3B_png);
-				}else { // D, or N
+					break;
+				default: // D, or N
 					this.sprite = new cc.Sprite(res.chara3F_png);
+				break;
 				}
 			}else{
-				if(dir=="L"){
+				switch (dir) {
+				case "L":
 					this.sprite = new cc.Sprite(res.chara4L_png);
-				}
-				else if(dir=="R"){
+					break;
+				case "R":
 					this.sprite = new cc.Sprite(res.chara4R_png);
-				}else if(dir=="U"){
+					break;
+				case "U":
 					this.sprite = new cc.Sprite(res.chara4B_png);
-				}else { // D or N
+					break;
+				default: // D, or N
 					this.sprite = new cc.Sprite(res.chara4F_png);
+				break;
 				}
 			}
 			var PX=PlayerPos[currTurn][i][0];
@@ -195,14 +218,21 @@ var MenuLayer = cc.Layer.extend({
 		var size = cc.winSize; // window size
 		var i;
 		for(i=0;i<playersNum;++i){
-			if(i==0){
+			switch (i) {
+			case 0:
 				this.sprite = new cc.Sprite(res.Menu1_png);
-			}else if(i==1){
+				break;
+			case 1:
 				this.sprite = new cc.Sprite(res.Menu2_png);
-			}else if(i==2){
+				break;
+			case 2:
 				this.sprite = new cc.Sprite(res.Menu3_png);
-			}else{
+				break;
+			case 3:
 				this.sprite = new cc.Sprite(res.Menu4_png);
+				break;
+			default:
+				break;
 			}
 			this.sprite.attr({
 				x: size.width,
@@ -240,6 +270,7 @@ var MenuLayer = cc.Layer.extend({
 		}
 
 		// Menubar(it shows parameters, such as current turn)
+		// manual replay
 		this.sprite = new cc.Sprite(res.Menu5_png);
 		this.sprite.attr({
 			x: size.width,
@@ -250,10 +281,10 @@ var MenuLayer = cc.Layer.extend({
 		this.sprite.setAnchorPoint(1, 1);
 		this.addChild(this.sprite, 0);
 		var TurnLabel = new cc.LabelTTF("Turn: "+currTurn, "Arial", Labelsize);
-		TurnLabel.x = size.width - 100;
-		TurnLabel.y = size.height -35 + Labelsize - 75*4;
+		TurnLabel.x = size.width - 50; // width/2
+		TurnLabel.y = size.height - 75*4; // height*4
 		TurnLabel.setColor(cc.color(0,0,0,0));
-		//TurnLabel.setAnchorPoint(0.5,0.5);
+		TurnLabel.setAnchorPoint(1,1);
 		this.addChild(TurnLabel, 0);
 
 		// Turn (go and back)
@@ -266,6 +297,7 @@ var MenuLayer = cc.Layer.extend({
 							cc.log("Back!!");
 							// 存在しないところにアクセスしないようにする必要がある
 							if(currTurn-1>=0){
+								GoToLastTurn=false; // 自動再生off 
 								--currTurn;
 								cc.director.runScene(new HelloWorldScene());
 							}
@@ -278,6 +310,7 @@ var MenuLayer = cc.Layer.extend({
 							cc.log("Next!!");
 							// 存在しないところにアクセスしないようにする必要がある
 							if(currTurn+1<=MaxTurn){
+								GoToLastTurn=false; // 自動再生off 
 								++currTurn;
 								cc.director.runScene(new HelloWorldScene());
 							}
@@ -307,6 +340,7 @@ var MenuLayer = cc.Layer.extend({
 							cc.log("Go First Turn!!");
 							// 存在しないところにアクセスしないようにする必要がある
 							currTurn=0;
+							GoToLastTurn=false; // 自動再生off 
 							cc.director.runScene(new HelloWorldScene());
 						}, this);
 			}else{
@@ -317,6 +351,7 @@ var MenuLayer = cc.Layer.extend({
 							cc.log("Go Last Turn!!");
 							// 存在しないところにアクセスしないようにする必要がある
 							currTurn=MaxTurn;
+							GoToLastTurn=false; // 自動再生off 
 							cc.director.runScene(new HelloWorldScene());
 						}, this);
 			}
@@ -333,9 +368,81 @@ var MenuLayer = cc.Layer.extend({
 			menu.y = 0;
 			this.addChild(menu, 0);
 		}
+		// auto replay
+		this.sprite = new cc.Sprite(res.Menu5_png);
+		this.sprite.attr({
+			x: size.width,
+			y: size.height-75*5,
+			scale: 1,
+			rotation: 0
+		});
+		this.sprite.setAnchorPoint(1, 1);
+		this.addChild(this.sprite, 0);
+
+		var replayLabel = new cc.LabelTTF("自動再生", "Arial", Labelsize);
+		replayLabel.x = size.width - 50;
+		replayLabel.y = size.height - 75*5;
+		replayLabel.setColor(cc.color(0,0,0,0));
+		replayLabel.setAnchorPoint(1,1);
+		this.addChild(replayLabel, 0);
+
+		for(i=-1;i<=1;++i){
+			if(i==-1){
+				var replayItem = new cc.MenuItemImage(
+						res.slow1_png,
+						res.slow2_png,
+						function () {
+							cc.log("Slow!!");
+							if(currTurn<=MaxTurn){
+								if(currTurn==MaxTurn){ currTurn=0;}
+								GoToLastTurn=true;
+								replaySpeed=1;
+								cc.director.runScene(new HelloWorldScene());
+							}
+						}, this);
+			}else if(i==0){
+				var replayItem = new cc.MenuItemImage(
+						res.normal1_png,
+						res.normal2_png,
+						function () {
+							cc.log("Normal!!");
+							if(currTurn<=MaxTurn){
+								if(currTurn==MaxTurn){ currTurn=0;}
+								GoToLastTurn=true;
+								replaySpeed=0.5;
+								cc.director.runScene(new HelloWorldScene());
+							}
+						}, this);
+			}else {
+				var replayItem = new cc.MenuItemImage(
+						res.fast1_png,
+						res.fast2_png,
+						function () {
+							cc.log("Fast!!");
+							if(currTurn<=MaxTurn){
+								if(currTurn==MaxTurn){ currTurn=0;}
+								GoToLastTurn=true;
+								replaySpeed=0.1;
+								cc.director.runScene(new HelloWorldScene());
+							}
+						}, this);
+			}
+			replayItem.attr({
+				x: size.width - 100 + 60*i,
+				y: size.height - 50 - 75*5,
+				scale: 0.25,
+				rotation: 0
+			});
+			var replay = new cc.Menu(replayItem);
+			replay.x = 0;
+			replay.y = 0;
+			this.addChild(replay, 0);
+		}
+		
 		return true;
 	}
 });
+
 
 var HelloWorldScene = cc.Scene.extend({
     onEnter:function () {
@@ -343,8 +450,24 @@ var HelloWorldScene = cc.Scene.extend({
         this.addChild(new BaseLayer);
         this.addChild(new MenuLayer); 
         this.addChild(new FieldLayer);
-        cc.log("height " + cc.winSize.height);
-        cc.log("width " + cc.winSize.width);
+        //cc.log("height " + cc.winSize.height);
+        //cc.log("width " + cc.winSize.width);
+        if(currTurn==0){GoToFirstTurn=false;}
+        if(currTurn==MaxTurn){GoToLastTurn=false;}
+        /*
+        if(GoToFirstTurn==true){
+        	this.schedule(function(){
+        		--currTurn;
+        		cc.log("scheduler"+currTurn);
+        		cc.director.runScene(new HelloWorldScene());
+        	}, 0, 1, 0.25);
+        }else */ 
+        if(GoToLastTurn==true){
+        	this.schedule(function(){
+        		++currTurn;
+        		cc.director.runScene(new HelloWorldScene());
+        	}, 0, 1, replaySpeed);
+        }
     }
 });
 
