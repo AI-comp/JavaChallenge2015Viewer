@@ -243,7 +243,7 @@ var MenuLayer = cc.Layer.extend({
 			this.sprite.setAnchorPoint(1, 1);	
 			this.addChild(this.sprite, 0);
 			var Labelsize=25;
-			var NAME = "Palyer" + (i+1);
+			var NAME = "Player" + (i+1);
 			var PlayerLabel = new cc.LabelTTF(NAME, "Arial", Labelsize);
 			PlayerLabel.x = size.width - 100 ;
 			PlayerLabel.y = size.height -40 + Labelsize - 75*i;
