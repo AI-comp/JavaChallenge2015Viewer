@@ -17,42 +17,40 @@ var replaySpeed=0.5;
 //"curr" means current
 // input log from text file
 var Arr = []; // for adding strings written in text(log)
-cc.loader.loadTxt(res.sampleLog,
-	function(obj,STR){	
-	var tmpArr=[];
-	var STRtmp=STR.split("\n");
+STR=replay; // input from replay(string)
+var tmpArr=[];
+var STRtmp=STR.split("\n");
+var i=0;
+for(i=0;i<STRtmp.length;++i){ Arr.push(STRtmp[i]);}
+cc.log("Arr: "+Arr.length);
+MaxTurn=parseInt(Arr.length/47)-1; // Turn が0 origin の場合 -1 すること!!
+cc.log("MaxTurn: "+MaxTurn);
+var j=0;
+for(j=0;j<=MaxTurn;++j){
+	var J=47*j;
+	currTurn=parseInt(Arr[J+0][0],10);
+	cc.log("currTurn: " + currTurn);
+	Life[currTurn]=Arr[J+1].split(" ").map(function(v) { return parseInt(v); });
+	cc.log("Life: "+Life[currTurn]);
+	var currboard =[[],[]];
 	var i=0;
-	for(i=0;i<STRtmp.length;++i){ Arr.push(STRtmp[i]);}
-	cc.log("Arr: "+Arr.length);
-	MaxTurn=parseInt(Arr.length/47)-1; // Turn が0 origin の場合 -1 すること!!
-	cc.log("MaxTurn: "+MaxTurn);
-	var j=0;
-	for(j=0;j<=MaxTurn;++j){
-		var J=47*j;
-		currTurn=parseInt(Arr[J+0][0],10);
-		cc.log("currTurn: " + currTurn);
-		Life[currTurn]=Arr[J+1].split(" ").map(function(v) { return parseInt(v); });
-		cc.log("Life: "+Life[currTurn]);
-		var currboard =[[],[]];
-		var i=0;
-		for(i=0;i<MAP_WIDTH;++i){
-			currboard[i] = Arr[J+i+2].split(" ").map(function(v) { return parseInt(v); });
-			//cc.log(currboard[i]);
-		}
-		cc.log("currboard: "+currboard.length);
-		allBoard[currTurn]=currboard;
-		PlayerPos[currTurn]=[[],[],[],[]];
-		for(i=42;i<42+playersNum;++i){
-			var tmp=Arr[J+i].split(" ");
-			PlayerPos[currTurn][i-42][0] = parseInt(tmp[0],10);
-			PlayerPos[currTurn][i-42][1] = parseInt(tmp[1],10);
-			PlayerPos[currTurn][i-42][2] = tmp[2];
-		}
-		cc.log("PlayerPos: "+PlayerPos[currTurn]);
-		PlayerCommand[currTurn]=Arr[J+i].split(" ");
-		cc.log("PlayerCommand: "+PlayerCommand[currTurn]);
+	for(i=0;i<MAP_WIDTH;++i){
+		currboard[i] = Arr[J+i+2].split(" ").map(function(v) { return parseInt(v); });
+		//cc.log(currboard[i]);
 	}
-});
+	cc.log("currboard: "+currboard.length);
+	allBoard[currTurn]=currboard;
+	PlayerPos[currTurn]=[[],[],[],[]];
+	for(i=42;i<42+playersNum;++i){
+		var tmp=Arr[J+i].split(" ");
+		PlayerPos[currTurn][i-42][0] = parseInt(tmp[0],10);
+		PlayerPos[currTurn][i-42][1] = parseInt(tmp[1],10);
+		PlayerPos[currTurn][i-42][2] = tmp[2];
+	}
+	cc.log("PlayerPos: "+PlayerPos[currTurn]);
+	PlayerCommand[currTurn]=Arr[J+i].split(" ");
+	cc.log("PlayerCommand: "+PlayerCommand[currTurn]);
+}
 
 //
 var BaseLayer = cc.Layer.extend({
