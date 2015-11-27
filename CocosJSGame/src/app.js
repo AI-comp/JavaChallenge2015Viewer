@@ -1,10 +1,11 @@
 // player の配置
-var MAP_WIDTH=40; // 8 block * 8 block, 1block = 5*5 
+var NumPannel=6;
+var PannelSize=3; // size of a Pannel
+var MAP_WIDTH=NumPannel; // 8 block * 8 block, 1block = 5*5 
 var playersNum=4;
-var INITIAL_LIFE=5;
-var NumPannel=8;
-var FORCED_END_TURN=10000;
-var MaxTurn=10000;
+var INITIAL_LIFE=1;
+var FORCED_END_TURN=1000;
+var MaxTurn=FORCED_END_TURN;
 var currTurn=0; // 現在ターンで、0 のときは初期配置
 var targetTurn=0;
 var allBoard=[];
@@ -23,11 +24,13 @@ var STRtmp=STR.split("\n");
 var i=0;
 for(i=0;i<STRtmp.length;++i){ Arr.push(STRtmp[i]);}
 cc.log("Arr: "+Arr.length);
-MaxTurn=parseInt(Arr.length/47)-1; // Turn が0 origin の場合 -1 すること!!
+cc.log(Arr);
+var lines = 7+NumPannel; // last line is null
+MaxTurn=parseInt(Arr.length/lines)-1; // Turn が0 origin の場合 -1 すること!!
 cc.log("MaxTurn: "+MaxTurn);
 var j=0;
 for(j=0;j<=MaxTurn;++j){
-	var J=47*j;
+	var J=lines*j;
 	currTurn=parseInt(Arr[J+0][0],10);
 	cc.log("currTurn: " + currTurn);
 	Life[currTurn]=Arr[J+1].split(" ").map(function(v) { return parseInt(v); });
@@ -41,11 +44,13 @@ for(j=0;j<=MaxTurn;++j){
 	cc.log("currboard: "+currboard.length);
 	allBoard[currTurn]=currboard;
 	PlayerPos[currTurn]=[[],[],[],[]];
-	for(i=42;i<42+playersNum;++i){
+	// player position and deriction
+	var I=2+NumPannel;
+	for(i=I;i<I+playersNum;++i){
 		var tmp=Arr[J+i].split(" ");
-		PlayerPos[currTurn][i-42][0] = parseInt(tmp[0],10);
-		PlayerPos[currTurn][i-42][1] = parseInt(tmp[1],10);
-		PlayerPos[currTurn][i-42][2] = tmp[2];
+		PlayerPos[currTurn][i-I][0] = parseInt(tmp[0],10);
+		PlayerPos[currTurn][i-I][1] = parseInt(tmp[1],10);
+		PlayerPos[currTurn][i-I][2] = tmp[2];
 	}
 	cc.log("PlayerPos: "+PlayerPos[currTurn]);
 	PlayerCommand[currTurn]=Arr[J+i].split(" ");
@@ -84,15 +89,17 @@ var FieldLayer = cc.Layer.extend({
 		var board=[[],[]];
 		board=allBoard[currTurn]; // set board to current Turn
 		var i,j;
-		// field の座標
+		// field の座標(pixel)
 		var fieldX=new Array();
-		for(i=0;i<MAP_WIDTH;++i) fieldX[i]= cc.winSize.width/NumPannel+10*i;
+		for(i=0;i<MAP_WIDTH;++i) fieldX[i]= cc.winSize.width/(NumPannel+2)+i*(10*PannelSize);
 		var fieldY=new Array();
-		for(i=0;i<MAP_WIDTH;++i) fieldY[i]=cc.winSize.height- 40 - i*10;
+		for(i=0;i<MAP_WIDTH;++i) fieldY[i]=cc.winSize.height- 40 - i*10*PannelSize; // 50=10*PannelSize
 		// 2 * n + 5 (the center of the pannel)
+		cc.log("fieldX: "+fieldX);
+		cc.log("fieldY: "+fieldY);
 		for(j=0;j<NumPannel;++j){
 			for(i=0;i<NumPannel;++i){
-				var NUM=board[5*j+2][5*i+2];
+				var NUM=board[j][i];
 				if(NUM<0) continue;
 				if((i+j)%2==0){
 					this.sprite = new cc.Sprite(res.block4_png);
@@ -100,9 +107,9 @@ var FieldLayer = cc.Layer.extend({
 					this.sprite = new cc.Sprite(res.block7_png);
 				}
 				this.sprite.attr({
-				x: fieldX[2+5*i],
-				y: fieldY[2+5*j],
-				scale: 50/16, // pannel 16x16 -> 50x50
+				x: fieldX[i],
+				y: fieldY[j],
+				scale: 10*PannelSize/16, // pannel 16x16 -> 50x50
 				rotation: 0
 				});
 				// board[y][x]
@@ -189,13 +196,24 @@ var FieldLayer = cc.Layer.extend({
 					this.sprite = new cc.Sprite(res.chara4F_png);
 				break;
 				}
-			}
+			}			
+			// fieldSize = PannelSize * NumPannel
+			// even, odd
 			var PX=PlayerPos[currTurn][i][0];
+			var PX_int = parseInt(PX / PannelSize,10);
+			var PX_res = PX - PX_int * PannelSize;
 			var PY=PlayerPos[currTurn][i][1];
+			var PY_int = parseInt(PY / PannelSize,10);
+			var PY_res = PY - PY_int * PannelSize;
+			if(PY_res==0){ 
+				PY_int-=1; 
+				PY_res=PannelSize;}
+			cc.log("PY: "+PY);
+			cc.log("PY_int: "+ PY_int + " PY_res: "+ PY_res);
 			this.sprite.attr({
-				x: fieldX[PX],
-				y: fieldY[PY], 
-				scale: 60/30, // ?? chara 30x30, pannel 50x50
+				x: fieldX[PX_int]+10/PannelSize*PX_res-10*PannelSize/2,
+				y: fieldY[PY_int]+10/PannelSize*PY_res-10*PannelSize/2,
+				scale: 10*PannelSize/30, // ?? chara 30x30, pannel 50x50
 				rotation: 0
 			});
 			// キャラクターの重心と位置座標が同一だと、違和感がある
