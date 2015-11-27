@@ -1,6 +1,7 @@
 // player の配置
 var NumPannel=6;
 var PannelSize=3; // size of a Pannel
+var PannelPixel=20;
 var MAP_WIDTH=NumPannel; // 8 block * 8 block, 1block = 5*5 
 var playersNum=4;
 var INITIAL_LIFE=1;
@@ -92,9 +93,10 @@ var FieldLayer = cc.Layer.extend({
 		var i,j;
 		// field の座標(pixel)
 		var fieldX=new Array();
-		for(i=0;i<MAP_WIDTH;++i) fieldX[i]= cc.winSize.width/(NumPannel+2)+i*(10*PannelSize);
+		for(i=0;i<MAP_WIDTH;++i) fieldX[i]= cc.winSize.width/(NumPannel+2)+i*(PannelPixel*PannelSize);
 		var fieldY=new Array();
-		for(i=0;i<MAP_WIDTH;++i) fieldY[i]=cc.winSize.height- 40 - i*10*PannelSize; // 50=10*PannelSize
+		for(i=0;i<MAP_WIDTH;++i) fieldY[i]= cc.winSize.height - cc.winSize.height/(NumPannel+2) 
+		- i*PannelPixel*PannelSize; // 左上が原点
 		// 2 * n + 5 (the center of the pannel)
 		cc.log("fieldX: "+fieldX);
 		cc.log("fieldY: "+fieldY);
@@ -110,13 +112,13 @@ var FieldLayer = cc.Layer.extend({
 				this.sprite.attr({
 				x: fieldX[i],
 				y: fieldY[j],
-				scale: 10*PannelSize/16, // pannel 16x16 -> 50x50
+				scale: PannelPixel*PannelSize/16, // pannel 16x16 -> 50x50
 				rotation: 0
 				});
 				// board[y][x]
 				this.addChild(this.sprite, 0);
 				if(NUM>0){
-					var Fout=cc.FadeTo.create(1.5,50+NUM*30);
+					var Fout=cc.FadeTo.create(1.5,20+NUM/4*35);
 					var Fin=cc.FadeIn.create(1.5);
 					var TMP=cc.sequence(Array(Fout,Fin));
 					this.sprite.runAction(cc.repeatForever(TMP));				
@@ -212,14 +214,14 @@ var FieldLayer = cc.Layer.extend({
 			PY_res -=1;  // -1, 0, 1
 			PY_res *= -1;
 			this.sprite.attr({
-				x: fieldX[PX_int]+10*PX_res,
-				y: fieldY[PY_int]+10*PY_res,
-				scale: 10*PannelSize/30, // ?? chara 30x30, pannel 50x50
+				x: fieldX[PX_int]+PannelPixel*PX_res,
+				y: fieldY[PY_int]+PannelPixel*PY_res,
+				scale: PannelPixel*PannelSize/30, // ?? chara 30x30, pannel 50x50
 				rotation: 0
 			});
 			// キャラクターの重心と位置座標が同一だと、違和感がある
 			// (0.5,0.5)で中心を表す
-			this.sprite.setAnchorPoint(0.5, 0.5);		
+			this.sprite.setAnchorPoint(0.5, 0.25);		
 			//this.sprite.setScale(1);
 			if(PX!=-1 && PY!=-1) 
 				this.addChild(this.sprite, 0);
@@ -268,10 +270,11 @@ var MenuLayer = cc.Layer.extend({
 			this.addChild(PlayerLabel, 0);
 
 			// life
-			/*
 			var k;
 			for(k=0;k<INITIAL_LIFE;++k){
-				var tmp = Life[currTurn][i];
+				//var tmp = Life[currTurn][i];
+				var tmp = 1;
+				if(PlayerPos[currTurn][i][0]==-1 | PlayerPos[currTurn][i][1]==-1) tmp=0;
 				if(k<tmp){
 					this.sprite = new cc.Sprite(res.life1_png);
 				}else{
@@ -285,7 +288,6 @@ var MenuLayer = cc.Layer.extend({
 				});
 				this.addChild(this.sprite, 0);
 			}
-			*/
 		}
 
 		// Menubar(it shows parameters, such as current turn)
@@ -398,7 +400,7 @@ var MenuLayer = cc.Layer.extend({
 		this.sprite.setAnchorPoint(1, 1);
 		this.addChild(this.sprite, 0);
 
-		var replayLabel = new cc.LabelTTF("自動再生", "Arial", Labelsize);
+		var replayLabel = new cc.LabelTTF("Auto Replay", "Arial", Labelsize);
 		replayLabel.x = size.width - 50;
 		replayLabel.y = size.height - 75*5;
 		replayLabel.setColor(cc.color(0,0,0,0));
