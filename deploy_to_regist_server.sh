@@ -13,9 +13,6 @@ CURRENT=$(cd $(dirname $0) && pwd)
 
 cd $CURRENT
 
-npm install
-grunt setup
-
 mkdir -p ../../public/contests
 rm -Rf "../../public/contests/$1"
 mkdir -p "../../public/contests/$1"
