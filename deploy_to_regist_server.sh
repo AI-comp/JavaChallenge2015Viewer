@@ -17,5 +17,6 @@ mkdir -p ../../public/contests
 rm -Rf "../../public/contests/$1"
 mkdir -p "../../public/contests/$1"
 cp -R "CocosJSGame" "../../public/contests/$1/battle_results"
+cp -R "views" "../../public/contests/$1/"
 
 cd $ORIGINAL
