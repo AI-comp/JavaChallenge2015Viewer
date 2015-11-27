@@ -9,7 +9,7 @@ var MaxTurn=FORCED_END_TURN;
 var currTurn=0; // 現在ターンで、0 のときは初期配置
 var targetTurn=0;
 var allBoard=[];
-var Life=[];
+//var Life=[];
 var PlayerPos=[];
 var PlayerCommand=[];
 var GoToFirstTurn=false;
@@ -19,33 +19,34 @@ var replaySpeed=0.5;
 // input log from text file
 var Arr = []; // for adding strings written in text(log)
 STR=replay[0]; // input from replay(string)
+//STR="0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 14 D\n14 17 L\n14 10 U\n0 3 R\nN N N N\n1\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 17 L\n14 10 U\n0 3 R\nU N N N\n2\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 10 U\n0 3 R\nU U N N\n3\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 3 R\nU U U N\n4\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 2 U\nU U U U\n5\n15 0 0 0 0 0\n11 0 0 0 0 0\n7 0 0 0 0 0\n3 0 0 0 0 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 2 U\nA U U U\n6\n14 0 0 0 19 0\n10 0 0 0 15 0\n6 0 0 0 11 0\n2 0 0 0 7 0\n0 0 0 0 3 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 2 U\nA A U U\n7\n13 0 0 0 18 0\n9 0 0 0 14 0\n5 0 0 0 10 0\n1 0 0 0 6 0\n0 0 0 0 2 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 2 U\nA A A U\n8\n12 0 0 0 17 0\n8 0 0 0 13 0\n4 0 0 0 9 0\n-19 0 0 0 5 0\n0 0 0 0 1 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 1 U\nA A A U\n9\n11 0 0 0 16 0\n7 0 0 0 12 0\n3 0 0 0 8 0\n-18 0 0 0 4 0\n0 0 0 0 -19 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 1 U\nN A A U\n10\n10 0 0 0 15 0\n6 0 0 0 11 0\n2 0 0 0 7 0\n-17 0 0 0 3 0\n0 0 0 0 -18 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 1 U\nN N A U\n11\n9 0 0 0 14 0\n5 0 0 0 10 0\n1 0 0 0 6 0\n-16 0 0 0 2 0\n0 0 0 0 -17 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 1 U\nN N N U\n12\n8 0 0 0 13 0\n4 0 0 0 9 0\n-19 0 0 0 5 0\n-15 0 0 0 1 0\n0 0 0 0 -16 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n14 9 U\n0 0 U\nN N N U\n13\n7 0 0 0 12 0\n3 0 0 0 8 0\n-18 0 0 0 4 0\n-14 0 0 0 -19 0\n0 0 0 0 -15 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n14\n6 0 0 0 11 0\n2 0 0 0 7 0\n-17 0 0 0 3 0\n-13 0 0 0 -18 0\n0 0 0 0 -14 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n15\n5 0 0 0 10 0\n1 0 0 0 6 0\n-16 0 0 0 2 0\n-12 0 0 0 -17 0\n0 0 0 0 -13 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n16\n4 0 0 0 9 0\n-19 0 0 0 5 0\n-15 0 0 0 1 0\n-11 0 0 0 -16 0\n0 0 0 0 -12 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n17\n3 0 0 0 8 0\n-18 0 0 0 4 0\n-14 0 0 0 -19 0\n-10 0 0 0 -15 0\n0 0 0 0 -11 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n18\n2 0 0 0 7 0\n-17 0 0 0 3 0\n-13 0 0 0 -18 0\n-9 0 0 0 -14 0\n0 0 0 0 -10 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n19\n1 0 0 0 6 0\n-16 0 0 0 2 0\n-12 0 0 0 -17 0\n-8 0 0 0 -13 0\n0 0 0 0 -9 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n0 0 U\nN N N U\n20\n-19 0 0 0 5 0\n-15 0 0 0 1 0\n-11 0 0 0 -16 0\n-7 0 0 0 -12 0\n0 0 0 0 -8 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N U\n21\n-18 0 0 0 4 0\n-14 0 0 0 -19 0\n-10 0 0 0 -15 0\n-6 0 0 0 -11 0\n0 0 0 0 -7 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N U\n22\n-17 0 0 0 3 0\n-13 0 0 0 -18 0\n-9 0 0 0 -14 0\n-5 0 0 0 -10 0\n0 0 0 0 -6 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N U\n23\n-16 0 0 0 2 0\n-12 0 0 0 -17 0\n-8 0 0 0 -13 0\n-4 0 0 0 -9 0\n0 0 0 0 -5 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N U\n24\n-15 0 0 0 1 0\n-11 0 0 0 -16 0\n-7 0 0 0 -12 0\n-3 0 0 0 -8 0\n0 0 0 0 -4 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N N\n25\n-14 0 0 0 -19 0\n-10 0 0 0 -15 0\n-6 0 0 0 -11 0\n-2 0 0 0 -7 0\n0 0 0 0 -3 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N N\n26\n-13 0 0 0 -18 0\n-9 0 0 0 -14 0\n-5 0 0 0 -10 0\n-1 0 0 0 -6 0\n0 0 0 0 -2 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N N\n27\n-12 0 0 0 -17 0\n-8 0 0 0 -13 0\n-4 0 0 0 -9 0\n0 0 0 0 -5 0\n0 0 0 0 -1 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N N\n28\n-11 0 0 0 -16 0\n-7 0 0 0 -12 0\n-3 0 0 0 -8 0\n0 0 0 0 -4 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 U\n14 16 U\n-1 -1 U\n-1 -1 U\nN N N N\n29\n-10 0 0 0 -15 0\n-6 0 0 0 -11 0\n-2 0 0 0 -7 0\n0 0 0 0 -3 0\n0 0 0 0 0 0\n0 0 0 0 0 0\n0 13 L\n14 16 U\n-1 -1 U\n-1 -1 U\nL N N N\n";
 var tmpArr=[];
 var STRtmp=STR.split("\n");
 var i=0;
 for(i=0;i<STRtmp.length;++i){ Arr.push(STRtmp[i]);}
 cc.log("Arr: "+Arr.length);
 cc.log(Arr);
-var lines = 7+NumPannel; // last line is null
+var lines = 6+NumPannel; // last line is null
 MaxTurn=parseInt(Arr.length/lines)-1; // Turn が0 origin の場合 -1 すること!!
 cc.log("MaxTurn: "+MaxTurn);
 var j=0;
 for(j=0;j<=MaxTurn;++j){
 	var J=lines*j;
-	currTurn=parseInt(Arr[J+0][0],10);
+	currTurn=parseInt(Arr[J+0],10);
 	cc.log("currTurn: " + currTurn);
-	Life[currTurn]=Arr[J+1].split(" ").map(function(v) { return parseInt(v); });
-	cc.log("Life: "+Life[currTurn]);
+	//Life[currTurn]=Arr[J+1].split(" ").map(function(v) { return parseInt(v); });
+	//cc.log("Life: "+Life[currTurn]);
 	var currboard =[[],[]];
 	var i=0;
 	for(i=0;i<MAP_WIDTH;++i){
-		currboard[i] = Arr[J+i+2].split(" ").map(function(v) { return parseInt(v); });
+		currboard[i] = Arr[J+i+1].split(" ").map(function(v) { return parseInt(v); });
 		//cc.log(currboard[i]);
 	}
-	cc.log("currboard: "+currboard.length);
+	cc.log("currboard: "+currboard);
 	allBoard[currTurn]=currboard;
 	PlayerPos[currTurn]=[[],[],[],[]];
 	// player position and deriction
-	var I=2+NumPannel;
+	var I=1+NumPannel;
 	for(i=I;i<I+playersNum;++i){
 		var tmp=Arr[J+i].split(" ");
 		PlayerPos[currTurn][i-I][0] = parseInt(tmp[0],10);
@@ -200,16 +201,13 @@ var FieldLayer = cc.Layer.extend({
 			// fieldSize = PannelSize * NumPannel
 			// even, odd
 			var PX=PlayerPos[currTurn][i][0];
-			var PX_int = parseInt(PX / PannelSize,10);
-			var PX_res = PX - PX_int * PannelSize;
+			var PX_int = Math.floor(PX / PannelSize);
+			var PX_res = PX - PX_int * PannelSize; // 0, 1, 2
+			PX_res -=1; // -1, 0, 1
 			var PY=PlayerPos[currTurn][i][1];
-			var PY_int = parseInt(PY / PannelSize,10);
+			var PY_int = Math.floor(PY / PannelSize);
 			var PY_res = PY - PY_int * PannelSize;
-			if(PY_res==0){ 
-				PY_int-=1; 
-				PY_res=PannelSize;}
-			cc.log("PY: "+PY);
-			cc.log("PY_int: "+ PY_int + " PY_res: "+ PY_res);
+			PY_res -=1;  // -1, 0, 1
 			this.sprite.attr({
 				x: fieldX[PX_int]+10/PannelSize*PX_res-10*PannelSize/2,
 				y: fieldY[PY_int]+10/PannelSize*PY_res-10*PannelSize/2,
@@ -267,6 +265,7 @@ var MenuLayer = cc.Layer.extend({
 			this.addChild(PlayerLabel, 0);
 
 			// life
+			/*
 			var k;
 			for(k=0;k<INITIAL_LIFE;++k){
 				var tmp = Life[currTurn][i];
@@ -283,6 +282,7 @@ var MenuLayer = cc.Layer.extend({
 				});
 				this.addChild(this.sprite, 0);
 			}
+			*/
 		}
 
 		// Menubar(it shows parameters, such as current turn)
