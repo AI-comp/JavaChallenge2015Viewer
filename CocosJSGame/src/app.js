@@ -17,7 +17,7 @@ var replaySpeed=0.5;
 //"curr" means current
 // input log from text file
 var Arr = []; // for adding strings written in text(log)
-STR=replay; // input from replay(string)
+STR=replay[0]; // input from replay(string)
 var tmpArr=[];
 var STRtmp=STR.split("\n");
 var i=0;
