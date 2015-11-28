@@ -1,11 +1,4 @@
 <% unless battle_result.error %>
-  <script type="text/javascript">
-    replay = <%= raw battle_result.replay %>;
-    <% submissions = battle_result.submissions %>
-    playerIcons = <%= raw submissions.map { |s| submission_icon_url(s) } %>;
-    playerNames = <%= raw submissions.map { |s| s.filename_without_extension } %>;
-  </script>
-
   <canvas id="gameCanvas" width="800" height="450"></canvas>
   <script src="frameworks/cocos2d-html5/CCBoot.js"></script>
   <script src="main.js"></script>
