@@ -13,7 +13,7 @@ var allBoard=[];
 //var Life=[];
 var PlayerPos=[];
 var PlayerCommand=[];
-var GoToFirstTurn=false;
+var GoToFirstTurn=true;
 var GoToLastTurn=false;
 var replaySpeed=0.5;
 //"curr" means current
@@ -443,7 +443,7 @@ var MenuLayer = cc.Layer.extend({
 							if(currTurn<=MaxTurn){
 								if(currTurn==MaxTurn){ currTurn=0;}
 								GoToLastTurn=true;
-								replaySpeed=0.1;
+								replaySpeed=0.01;
 								cc.director.runScene(new HelloWorldScene());
 							}
 						}, this);
@@ -473,8 +473,12 @@ var HelloWorldScene = cc.Scene.extend({
         this.addChild(new FieldLayer);
         //cc.log("height " + cc.winSize.height);
         //cc.log("width " + cc.winSize.width);
-        if(currTurn==0){GoToFirstTurn=false;}
-        if(currTurn==MaxTurn){GoToLastTurn=false;}
+        if(GoToFirstTurn==true){
+        	GoToFirstTurn=false;
+        	currTurn=0;
+        	cc.director.runScene(new HelloWorldScene());
+        	}
+        else if(currTurn==MaxTurn){GoToLastTurn=false;}
         /*
         if(GoToFirstTurn==true){
         	this.schedule(function(){
